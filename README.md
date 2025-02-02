@@ -30,3 +30,4 @@ The data is gathered via the .NET code in the src folder. A quick and dirty piec
 
 1. Uses [d3.js](https://d3js.org/) for visualisations.
 1. The data is in [AllColours.json](AllColours.json).
+1. There might be something I'm missing, but I'd say most colours are accounted for - but pretty fun for an afternoon!
