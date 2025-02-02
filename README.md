@@ -8,6 +8,7 @@ This is a rough afternoon of work and aims to:
 
 Note:
 1. While a colour might be referenced once, it could be used many more times as a palette that gets applied to many tiles
+	1. For example, I think the mart is using the eight special colours from [house.pal](https://github.com/pret/pokecrystal/blob/master/gfx/tilesets/house.pal) which I think gets used in other places too.
 
 ## How to use
 
