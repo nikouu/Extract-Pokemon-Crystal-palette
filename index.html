@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Treemap Visualization</title>
+	<title>All Pokémon Crystal Colors Visualized</title>
 	<script src="https://d3js.org/d3.v7.min.js"></script>
 	<style>
 		.node {
@@ -15,11 +15,39 @@
 			position: absolute;
 			text-indent: 2px;
 		}
+
+		#treemap-container {
+			display: flex;
+			align-items: flex-start;
+		}
+
+		#treemap {
+			flex: 1;
+			position: inherit;
+			cursor: pointer;
+		}
+
+		#file-list {
+			min-width: 400px;
+			padding: 10px;
+			border-left: 1px solid #ccc;
+			overflow-y: auto;
+			position: fixed;
+			top: 0;
+			right: 0;
+			height: 100%;
+			background-color: #fff;
+			z-index: 1000;
+		}
 	</style>
 </head>
 
 <body>
-	<div id="treemap"></div>
+	<h1>All Pokémon Crystal Colors Visualized</h1>
+	<div id="treemap-container">
+		<div id="treemap"></div>
+		<div id="file-list"></div>
+	</div>
 	<script>
 		fetch('AllColours.json')
 			.then(response => response.json())
@@ -27,13 +55,15 @@
 				// Wrap the data in a root object
 				const rootData = { children: data };
 
+				// Calculate the width of the Treemap
+				const fileListWidth = 600;
+				const width = window.innerWidth - fileListWidth;
+				const height = 3000;
+
 				// Convert data to a format suitable for D3 Treemap
 				const root = d3.hierarchy(rootData)
 					.sum(d => d.Files ? d.Files.length : 0)
 					.sort((a, b) => b.value - a.value);
-
-				const width = 1200;
-				const height = 3000;
 
 				const treemap = d3.treemap()
 					.size([width, height])
@@ -56,6 +86,8 @@
 					.style("pointer-events", "none")
 					.style("font-size", "12px"); // Smaller font size for the tooltip
 
+				let selectedNode = null;
+
 				const nodes = svg.selectAll("g")
 					.data(root.leaves())
 					.enter()
@@ -74,7 +106,7 @@
 					.on("mouseover", (event, d) => {
 						const { Red, Green, Blue } = d.data.Colour;
 						tooltip.style("display", "block")
-							.html(`<strong>RGB:</strong> (${Red}, ${Green}, ${Blue})<br><strong>Files:</strong><br>${d.data.Files.join("<br>")}`);
+							.html(`<strong>RGB:</strong> (${Red}, ${Green}, ${Blue})`);
 					})
 					.on("mousemove", (event) => {
 						const tooltipHeight = tooltip.node().offsetHeight;
@@ -91,6 +123,31 @@
 					})
 					.on("mouseout", () => {
 						tooltip.style("display", "none");
+					})
+					.on("click", (event, d) => {
+						if (selectedNode) {
+							selectedNode.attr("stroke-width", 1).attr("stroke", d => {
+								const { Red, Green, Blue } = d.data.Colour;
+								return (Red === 255 && Green === 255 && Blue === 255) ? 'black' : 'none';
+							});
+						}
+						selectedNode = d3.select(event.currentTarget);
+						selectedNode.attr("stroke-width", 3).attr("stroke", "black");
+
+						const fileList = d3.select("#file-list");
+						fileList.html(""); // Clear previous content
+						const { Red, Green, Blue } = d.data.Colour;
+						const colorSquare = `<div style="display: inline-block; width: 20px; height: 20px; background-color: rgb(${Red}, ${Green}, ${Blue}); border: 1px solid black; margin-right: 5px;"></div>`;
+						fileList.append("h3").html(`${colorSquare}RGB: (${Red}, ${Green}, ${Blue})`);
+						fileList.append("h4").text("Files");
+						const ul = fileList.append("ul");
+						d.data.Files.forEach(file => {
+							ul.append("li")
+								.append("a")
+								.attr("href", `https://github.com/pret/pokecrystal/blob/master${file}`)
+								.attr("target", "_blank")
+								.text(file);
+						});
 					});
 
 				nodes.append("text")
@@ -102,8 +159,36 @@
 						const luminance = 0.299 * Red + 0.587 * Green + 0.114 * Blue;
 						return luminance > 128 ? 'black' : 'white';
 					});
+
+				// Add event listener to the document to clear selection when clicking outside
+				document.addEventListener("click", (event) => {
+					const treemapContainer = document.getElementById("treemap-container");
+					const fileList = document.getElementById("file-list");
+					if (!treemapContainer.contains(event.target) && !fileList.contains(event.target)) {
+						if (selectedNode) {
+							selectedNode.attr("stroke-width", 1).attr("stroke", d => {
+								const { Red, Green, Blue } = d.data.Colour;
+								return (Red === 255 && Green === 255 && Blue === 255) ? 'black' : 'none';
+							});
+							selectedNode = null;
+						}
+						d3.select("#file-list").html(""); // Clear file list
+					}
+				});
 			})
 			.catch(error => console.error('Error loading the JSON data:', error));
+
+
+
+
+
+
+
+
+
+
+
+
 	</script>
 </body>
 
