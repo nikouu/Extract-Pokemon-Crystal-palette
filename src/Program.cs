@@ -54,12 +54,59 @@ Console.WriteLine($"Total files: {colourDictionary.Values.Sum(x => x.Count)}");
 
 void ProcessFile(string filepath)
 {
+    if (filepath.Contains(@"\docs\"))
+    {
+        return;
+    }
+
     if (Path.GetExtension(filepath) == ".pal" || Path.GetExtension(filepath) == ".asm")
     {
         GetColoursFromFile(filepath);
     }
     else if (Path.GetExtension(filepath) == ".png")
     {
+        // These are the greyscale tilesets pngs that get the palettes applied to them
+        if (filepath.Contains(@"\gfx\tilesets")
+            || filepath.Contains(@"\gfx\sprites")
+            || filepath.Contains(@"\gfx\player")
+            || filepath.Contains(@"\gfx\intro")
+            || filepath.Contains(@"\gfx\title")
+            || filepath.Contains(@"\gfx\mobile")
+            || filepath.Contains(@"\gfx\battle_anims")
+            || filepath.Contains(@"\gfx\unown_puzzle")
+            || filepath.Contains(@"\gfx\trainer_card")
+            || filepath.Contains(@"\gfx\footprints")
+            || filepath.Contains(@"\gfx\overworld")
+            || filepath.Contains(@"\gfx\trade")
+            || filepath.Contains(@"\gfx\diploma")
+            || filepath.Contains(@"\gfx\evo")
+            || filepath.Contains(@"\gfx\pokegear")
+            || filepath.Contains(@"\gfx\pokedex")
+            || filepath.Contains(@"\gfx\pack")
+            || filepath.Contains(@"\gfx\credits")
+            || filepath.Contains(@"\gfx\battle")
+            || filepath.Contains(@"\gfx\stats")
+            || filepath.Contains(@"\gfx\slots")
+            || filepath.Contains(@"\gfx\emotes")
+            || filepath.Contains(@"\gfx\font")
+            || filepath.Contains(@"\gfx\pc")
+            || filepath.Contains(@"\gfx\egg")
+            || filepath.Contains(@"\gfx\printer")
+            || filepath.Contains(@"\gfx\card_flip")
+            || filepath.Contains(@"\gfx\memory_game")
+            || filepath.Contains(@"\gfx\mystery_gift")
+            || filepath.Contains(@"\gfx\debug")
+            || filepath.Contains(@"\gfx\splash")
+            || filepath.Contains(@"\gfx\sgb")
+            || filepath.Contains(@"\gfx\mail")
+            || filepath.Contains(@"\gfx\frames")
+            || filepath.Contains(@"\gfx\new_game")
+            || filepath.Contains(@"\gfx\naming_screen")
+            || filepath.Contains(@"\gfx\icons"))
+        {
+            return;
+        }
+
         var image = Image.FromFile(filepath);
         var bitmap = new Bitmap(image);
         for (var x = 0; x < bitmap.Width; x++)

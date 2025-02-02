@@ -44,146 +44,148 @@
 
 <body>
 	<h1>All Pokémon Crystal Colors Visualized</h1>
+	<p>A rough look at all the colours used in Pokémon Crystal via <a href="https://github.com/pret/pokecrystal">pret/pokecrystal</a> analysing coloured <code>.png</code>, <code>.pal</code>, and <code>.asm</code> files.</p>
+	<p>Click on a colour block to get information about where it's found.</p>
+	<p><a href="https://github.com/nikouu/Extract-Pokemon-Crystal-palette">By Niko Uusitalo on GitHub</a>.</p>
+	<p id="blurb"></p>
 	<div id="treemap-container">
 		<div id="treemap"></div>
 		<div id="file-list"></div>
 	</div>
 	<script>
 		fetch('AllColours.json')
-			.then(response => response.json())
-			.then(data => {
-				// Wrap the data in a root object
-				const rootData = { children: data };
+    .then(response => response.json())
+    .then(data => {
+        // Wrap the data in a root object
+        const rootData = { children: data };
 
-				// Calculate the width of the Treemap
-				const fileListWidth = 600;
-				const width = window.innerWidth - fileListWidth;
-				const height = 3000;
+        // Calculate the width of the Treemap
+        const fileListWidth = 500;
+        const width = window.innerWidth - fileListWidth;
+        const height = 3000;
 
-				// Convert data to a format suitable for D3 Treemap
-				const root = d3.hierarchy(rootData)
-					.sum(d => d.Files ? d.Files.length : 0)
-					.sort((a, b) => b.value - a.value);
+        // Convert data to a format suitable for D3 Treemap
+        const root = d3.hierarchy(rootData)
+            .sum(d => d.Files ? d.Files.length : 0)
+            .sort((a, b) => b.value - a.value);
 
-				const treemap = d3.treemap()
-					.size([width, height])
-					.padding(1);
+        const treemap = d3.treemap()
+            .size([width, height])
+            .padding(1);
 
-				treemap(root);
+        treemap(root);
 
-				const svg = d3.select("#treemap")
-					.append("svg")
-					.attr("width", width)
-					.attr("height", height);
+        const svg = d3.select("#treemap")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
 
-				const tooltip = d3.select("body")
-					.append("div")
-					.style("position", "absolute")
-					.style("background", "#fff")
-					.style("border", "1px solid #ccc")
-					.style("padding", "10px")
-					.style("display", "none")
-					.style("pointer-events", "none")
-					.style("font-size", "12px"); // Smaller font size for the tooltip
+        const tooltip = d3.select("body")
+            .append("div")
+            .style("position", "absolute")
+            .style("background", "#fff")
+            .style("border", "1px solid #ccc")
+            .style("padding", "10px")
+            .style("display", "none")
+            .style("pointer-events", "none")
+            .style("font-size", "12px"); // Smaller font size for the tooltip
 
-				let selectedNode = null;
+        let selectedNode = null;
 
-				const nodes = svg.selectAll("g")
-					.data(root.leaves())
-					.enter()
-					.append("g")
-					.attr("transform", d => `translate(${d.x0},${d.y0})`);
+        const nodes = svg.selectAll("g")
+            .data(root.leaves())
+            .enter()
+            .append("g")
+            .attr("transform", d => `translate(${d.x0},${d.y0})`);
 
-				nodes.append("rect")
-					.attr("id", d => d.data.Colour.Red + "-" + d.data.Colour.Green + "-" + d.data.Colour.Blue)
-					.attr("width", d => d.x1 - d.x0)
-					.attr("height", d => d.y1 - d.y0)
-					.attr("fill", d => `rgb(${d.data.Colour.Red},${d.data.Colour.Green},${d.data.Colour.Blue})`)
-					.attr("stroke", d => {
-						const { Red, Green, Blue } = d.data.Colour;
-						return (Red === 255 && Green === 255 && Blue === 255) ? 'black' : 'none';
-					})
-					.on("mouseover", (event, d) => {
-						const { Red, Green, Blue } = d.data.Colour;
-						tooltip.style("display", "block")
-							.html(`<strong>RGB:</strong> (${Red}, ${Green}, ${Blue})`);
-					})
-					.on("mousemove", (event) => {
-						const tooltipHeight = tooltip.node().offsetHeight;
-						const pageHeight = document.body.scrollHeight;
-						const tooltipY = event.pageY + 10;
+        nodes.append("rect")
+            .attr("id", d => d.data.Colour.Red + "-" + d.data.Colour.Green + "-" + d.data.Colour.Blue)
+            .attr("width", d => d.x1 - d.x0)
+            .attr("height", d => d.y1 - d.y0)
+            .attr("fill", d => `rgb(${d.data.Colour.Red},${d.data.Colour.Green},${d.data.Colour.Blue})`)
+            .attr("stroke", d => {
+                const { Red, Green, Blue } = d.data.Colour;
+                return (Red === 255 && Green === 255 && Blue === 255) ? 'black' : 'none';
+            })
+            .on("mouseover", (event, d) => {
+                const { Red, Green, Blue } = d.data.Colour;
+                tooltip.style("display", "block")
+                    .html(`<strong>RGB:</strong> (${Red}, ${Green}, ${Blue})`);
+            })
+            .on("mousemove", (event) => {
+                const tooltipHeight = tooltip.node().offsetHeight;
+                const pageHeight = document.body.scrollHeight;
+                const tooltipY = event.pageY + 10;
 
-						if (tooltipHeight < pageHeight && tooltipY + tooltipHeight > pageHeight) {
-							tooltip.style("left", (event.pageX + 10) + "px")
-								.style("top", (event.pageY - tooltipHeight - 10) + "px");
-						} else {
-							tooltip.style("left", (event.pageX + 10) + "px")
-								.style("top", tooltipY + "px");
-						}
-					})
-					.on("mouseout", () => {
-						tooltip.style("display", "none");
-					})
-					.on("click", (event, d) => {
-						if (selectedNode) {
-							selectedNode.attr("stroke-width", 1).attr("stroke", d => {
-								const { Red, Green, Blue } = d.data.Colour;
-								return (Red === 255 && Green === 255 && Blue === 255) ? 'black' : 'none';
-							});
-						}
-						selectedNode = d3.select(event.currentTarget);
-						selectedNode.attr("stroke-width", 3).attr("stroke", "black");
+                if (tooltipHeight < pageHeight && tooltipY + tooltipHeight > pageHeight) {
+                    tooltip.style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - tooltipHeight - 10) + "px");
+                } else {
+                    tooltip.style("left", (event.pageX + 10) + "px")
+                        .style("top", tooltipY + "px");
+                }
+            })
+            .on("mouseout", () => {
+                tooltip.style("display", "none");
+            })
+            .on("click", (event, d) => {
+                if (selectedNode) {
+                    selectedNode.attr("stroke-width", 1).attr("stroke", d => {
+                        const { Red, Green, Blue } = d.data.Colour;
+                        return (Red === 255 && Green === 255 && Blue === 255) ? 'black' : 'none';
+                    });
+                }
+                selectedNode = d3.select(event.currentTarget);
+                selectedNode.attr("stroke-width", 3).attr("stroke", "black");
 
-						const fileList = d3.select("#file-list");
-						fileList.html(""); // Clear previous content
-						const { Red, Green, Blue } = d.data.Colour;
-						const colorSquare = `<div style="display: inline-block; width: 20px; height: 20px; background-color: rgb(${Red}, ${Green}, ${Blue}); border: 1px solid black; margin-right: 5px;"></div>`;
-						fileList.append("h3").html(`${colorSquare}RGB: (${Red}, ${Green}, ${Blue})`);
-						fileList.append("h4").text("Files");
-						const ul = fileList.append("ul");
-						d.data.Files.forEach(file => {
-							ul.append("li")
-								.append("a")
-								.attr("href", `https://github.com/pret/pokecrystal/blob/master${file}`)
-								.attr("target", "_blank")
-								.text(file);
-						});
-					});
+                const fileList = d3.select("#file-list");
+                fileList.html(""); // Clear previous content
+                const { Red, Green, Blue } = d.data.Colour;
+                const colorSquare = `<div style="display: inline-block; width: 20px; height: 20px; background-color: rgb(${Red}, ${Green}, ${Blue}); border: 1px solid black; margin-right: 5px;"></div>`;
+                fileList.append("h3").html(`${colorSquare}RGB: (${Red}, ${Green}, ${Blue})`);
+                fileList.append("h4").text("Files");
+                const ul = fileList.append("ul");
+                d.data.Files.forEach(file => {
+                    ul.append("li")
+                        .append("a")
+                        .attr("href", `https://github.com/pret/pokecrystal/blob/master${file}`)
+                        .attr("target", "_blank")
+                        .text(file);
+                });
+            });
 
-				nodes.append("text")
-					.attr("x", 3)
-					.attr("y", 15)
-					.text(d => d.data.Files.length)
-					.attr("fill", d => {
-						const { Red, Green, Blue } = d.data.Colour;
-						const luminance = 0.299 * Red + 0.587 * Green + 0.114 * Blue;
-						return luminance > 128 ? 'black' : 'white';
-					});
+        nodes.append("text")
+            .attr("x", 3)
+            .attr("y", 15)
+            .text(d => d.data.Files.length)
+            .attr("fill", d => {
+                const { Red, Green, Blue } = d.data.Colour;
+                const luminance = 0.299 * Red + 0.587 * Green + 0.114 * Blue;
+                return luminance > 128 ? 'black' : 'white';
+            });
 
-				// Add event listener to the document to clear selection when clicking outside
-				document.addEventListener("click", (event) => {
-					const treemapContainer = document.getElementById("treemap-container");
-					const fileList = document.getElementById("file-list");
-					if (!treemapContainer.contains(event.target) && !fileList.contains(event.target)) {
-						if (selectedNode) {
-							selectedNode.attr("stroke-width", 1).attr("stroke", d => {
-								const { Red, Green, Blue } = d.data.Colour;
-								return (Red === 255 && Green === 255 && Blue === 255) ? 'black' : 'none';
-							});
-							selectedNode = null;
-						}
-						d3.select("#file-list").html(""); // Clear file list
-					}
-				});
-			})
-			.catch(error => console.error('Error loading the JSON data:', error));
+        // Add event listener to the document to clear selection when clicking outside
+        document.addEventListener("click", (event) => {
+            const treemapContainer = document.getElementById("treemap-container");
+            const fileList = document.getElementById("file-list");
+            if (!treemapContainer.contains(event.target) && !fileList.contains(event.target)) {
+                if (selectedNode) {
+                    selectedNode.attr("stroke-width", 1).attr("stroke", d => {
+                        const { Red, Green, Blue } = d.data.Colour;
+                        return (Red === 255 && Green === 255 && Blue === 255) ? 'black' : 'none';
+                    });
+                    selectedNode = null;
+                }
+                d3.select("#file-list").html(""); // Clear file list
+            }
+        });
 
-
-
-
-
-
-
+        // Update the blurb with the number of distinct colors and color usages
+        const distinctColors = root.leaves().length;
+        const colorUsages = root.leaves().reduce((sum, d) => sum + d.value, 0);
+        d3.select("#blurb").text(`Total distinct colors: ${distinctColors}. Total color usages: ${colorUsages}`);
+    })
+    .catch(error => console.error('Error loading the JSON data:', error));
 
 
 
