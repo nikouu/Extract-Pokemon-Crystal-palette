@@ -149,12 +149,12 @@ void GetColoursFromFile(string filepath)
                 foreach (var colour in colours)
                 {
                     trimmedSpan[colour].Split(rawColours, ',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-                    var red = int.Parse(trimmedSpan[rawColours[0]]);
-                    var green = int.Parse(trimmedSpan[rawColours[1]]);
+                    var red = (int.Parse(trimmedSpan[rawColours[0]]) * 255) / 31;
+                    var green = (int.Parse(trimmedSpan[rawColours[1]]) * 255) / 31;
                     var blueString = trimmedSpan[rawColours[2]].EndsWith(',')
                         ? trimmedSpan[rawColours[2]][..^1]
                         : trimmedSpan[rawColours[2]];
-                    var blue = int.Parse(blueString);
+                    var blue = (int.Parse(blueString) * 255) / 31;
                     concurrentBag.Add(new ColourMetadata(new Colour(red, green, blue), filepath.Replace(baseCrystalDirectory, "")));
                 }
             }
@@ -167,12 +167,12 @@ void GetColoursFromFile(string filepath)
                 foreach (var colour in colours)
                 {
                     commentRemovedSpan[colour].Split(rawColours, ',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-                    var red = int.Parse(commentRemovedSpan[rawColours[0]]);
-                    var green = int.Parse(commentRemovedSpan[rawColours[1]]);
+                    var red = (int.Parse(commentRemovedSpan[rawColours[0]]) * 255) / 31; ;
+                    var green = (int.Parse(commentRemovedSpan[rawColours[1]]) * 255) / 31; ;
                     var blueString = commentRemovedSpan[rawColours[2]].EndsWith(',')
                         ? commentRemovedSpan[rawColours[2]][..^1]
                         : commentRemovedSpan[rawColours[2]];
-                    var blue = int.Parse(blueString);
+                    var blue = (int.Parse(blueString) * 255) / 31; ;
                     concurrentBag.Add(new ColourMetadata(new Colour(red, green, blue), filepath.Replace(baseCrystalDirectory, "")));
                 }
             }
@@ -181,9 +181,9 @@ void GetColoursFromFile(string filepath)
                 trimmedSpan.Split(rawColours, ',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
                 // Extra trims due to stray tabs
-                var red = int.Parse(trimmedSpan[rawColours[0]]);
-                var green = int.Parse(trimmedSpan[rawColours[1]]);
-                var blue = int.Parse(trimmedSpan[rawColours[2]]);
+                var red = (int.Parse(trimmedSpan[rawColours[0]]) * 255) / 31; ;
+                var green = (int.Parse(trimmedSpan[rawColours[1]]) * 255) / 31; ;
+                var blue = (int.Parse(trimmedSpan[rawColours[2]]) * 255) / 31; ;
                 concurrentBag.Add(new ColourMetadata(new Colour(red, green, blue), filepath.Replace(baseCrystalDirectory, "")));
             }
         }
