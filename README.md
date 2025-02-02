@@ -11,6 +11,8 @@ Note:
 
 ## How to use
 
+[Try it now now on GitHub Pages!](https://nikouu.github.io/Extract-Pokemon-Crystal-palette/)
+
 Each colour square is a colour found in Pokémon Crystal with the top left showing how many places refer to it. 
 
 Default view:
@@ -26,4 +28,5 @@ The data is gathered via the .NET code in the src folder. A quick and dirty piec
 
 ## Notes
 
-1. Uses [d3.js](https://d3js.org/) for visualisations
+1. Uses [d3.js](https://d3js.org/) for visualisations.
+1. The data is in [AllColours.json](AllColours.json).
