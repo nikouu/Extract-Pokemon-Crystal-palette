@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Treemap Visualization</title>
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+	<style>
+		.node {
+			border: solid 1px #fff;
+			font: 10px sans-serif;
+			line-height: 12px;
+			overflow: hidden;
+			position: absolute;
+			text-indent: 2px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="treemap"></div>
+	<script>
+		fetch('AllColours.json')
+			.then(response => response.json())
+			.then(data => {
+				// Wrap the data in a root object
+				const rootData = { children: data };
+
+				// Convert data to a format suitable for D3 Treemap
+				const root = d3.hierarchy(rootData)
+					.sum(d => d.Files ? d.Files.length : 0)
+					.sort((a, b) => b.value - a.value);
+
+				const width = 1200;
+				const height = 3000;
+
+				const treemap = d3.treemap()
+					.size([width, height])
+					.padding(1);
+
+				treemap(root);
+
+				const svg = d3.select("#treemap")
+					.append("svg")
+					.attr("width", width)
+					.attr("height", height);
+
+				const tooltip = d3.select("body")
+					.append("div")
+					.style("position", "absolute")
+					.style("background", "#fff")
+					.style("border", "1px solid #ccc")
+					.style("padding", "10px")
+					.style("display", "none")
+					.style("pointer-events", "none")
+					.style("font-size", "12px"); // Smaller font size for the tooltip
+
+				const nodes = svg.selectAll("g")
+					.data(root.leaves())
+					.enter()
+					.append("g")
+					.attr("transform", d => `translate(${d.x0},${d.y0})`);
+
+				nodes.append("rect")
+					.attr("id", d => d.data.Colour.Red + "-" + d.data.Colour.Green + "-" + d.data.Colour.Blue)
+					.attr("width", d => d.x1 - d.x0)
+					.attr("height", d => d.y1 - d.y0)
+					.attr("fill", d => `rgb(${d.data.Colour.Red},${d.data.Colour.Green},${d.data.Colour.Blue})`)
+					.attr("stroke", d => {
+						const { Red, Green, Blue } = d.data.Colour;
+						return (Red === 255 && Green === 255 && Blue === 255) ? 'black' : 'none';
+					})
+					.on("mouseover", (event, d) => {
+						const { Red, Green, Blue } = d.data.Colour;
+						tooltip.style("display", "block")
+							.html(`<strong>RGB:</strong> (${Red}, ${Green}, ${Blue})<br><strong>Files:</strong><br>${d.data.Files.join("<br>")}`);
+					})
+					.on("mousemove", (event) => {
+						const tooltipHeight = tooltip.node().offsetHeight;
+						const pageHeight = document.body.scrollHeight;
+						const tooltipY = event.pageY + 10;
+
+						if (tooltipHeight < pageHeight && tooltipY + tooltipHeight > pageHeight) {
+							tooltip.style("left", (event.pageX + 10) + "px")
+								.style("top", (event.pageY - tooltipHeight - 10) + "px");
+						} else {
+							tooltip.style("left", (event.pageX + 10) + "px")
+								.style("top", tooltipY + "px");
+						}
+					})
+					.on("mouseout", () => {
+						tooltip.style("display", "none");
+					});
+
+				nodes.append("text")
+					.attr("x", 3)
+					.attr("y", 15)
+					.text(d => d.data.Files.length)
+					.attr("fill", d => {
+						const { Red, Green, Blue } = d.data.Colour;
+						const luminance = 0.299 * Red + 0.587 * Green + 0.114 * Blue;
+						return luminance > 128 ? 'black' : 'white';
+					});
+			})
+			.catch(error => console.error('Error loading the JSON data:', error));
+	</script>
+</body>
+
+</html>
