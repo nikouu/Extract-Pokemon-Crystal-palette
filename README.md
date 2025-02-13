@@ -26,7 +26,10 @@ You can click on a colour to show where the references
 
 ## Data gathering
 
-The data is gathered via the .NET code in the src folder. A quick and dirty piece of code that analyses the pokecrystal folders looking for colour references and ultimately turns the results into JSON.
+The data is gathered via the .NET code in the src folder. A quick and dirty piece of code that analyses the pokecrystal folders looking for colour references and ultimately turns the results into JSON. The following outputs are:
+
+1. [AllColours.json](/AllColours.json) is the JSON output of each colour and associated location
+2. [CrystalPalette](/img//CrystalPalette.png) a visual, simple view of all 1599 colours
 
 ## Here's the palette!
 
