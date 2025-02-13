@@ -13,7 +13,7 @@ Note:
 
 ## How to use
 
-[Try it now now on GitHub Pages!](https://nikouu.github.io/Extract-Pokemon-Crystal-palette/)
+**[Try it now now on GitHub Pages!](https://nikouu.github.io/Extract-Pokemon-Crystal-palette/)**
 
 Each colour square is a colour found in Pokémon Crystal with the top left showing how many places refer to it. 
 
