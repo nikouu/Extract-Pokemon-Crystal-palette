@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using ExtractPokemonCrystalPalette;
+using System.Collections.Concurrent;
 using System.Drawing;
 using System.Text.Json;
 
@@ -45,6 +46,8 @@ var options = new JsonSerializerOptions
 {
     WriteIndented = true
 };
+
+PaletteExport.Export(colourDictionary);
 
 var json = JsonSerializer.Serialize(colourFilesList, options);
 
