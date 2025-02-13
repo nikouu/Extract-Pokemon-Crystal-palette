@@ -40,5 +40,4 @@ All 1599 colours, roughly ordered.
 ## Notes
 
 1. Uses [d3.js](https://d3js.org/) for visualisations.
-1. The data is in [AllColours.json](AllColours.json).
 1. There might be something I'm missing, but I'd say most colours are accounted for - but pretty fun for an afternoon!
