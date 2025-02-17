@@ -25,9 +25,8 @@ namespace ExtractPokemonCrystalPalette
                 .Select(c => c.Color)
                 .ToList();
 
-            for (int index = 0; index < sortedColors.Count; index++)
+            foreach ((var index, var item) in sortedColors.Index())
             {
-                var item = sortedColors[index];
                 var color = Color.FromArgb(item.Red, item.Green, item.Blue);
                 int x = index % sideLength;
                 int y = index / sideLength;
